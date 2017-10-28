@@ -1,0 +1,25 @@
+import requests
+from datetime import datetime
+import time
+
+def get_sun_info():
+	
+	url = 'https://api.sunrise-sunset.org/json?lat=52.23&lng=21.01'
+	r = requests.get(url, stream=True)
+	#r = requests.head(url, allow_redirects=False)
+	
+	year = datetime.today().year
+	month = datetime.today().month
+	day = datetime.today().day
+	
+	sunrise = r.json()['results']['sunrise']
+	sunset = r.json()['results']['sunset']
+	sunrise = datetime.strptime(sunrise, '%I:%M:%S %p')
+	sunset = datetime.strptime(sunset, '%I:%M:%S %p')
+	sunrise = time.mktime(datetime(year, month, day, sunrise.hour+4, sunrise.minute, sunrise.second).timetuple())*1000
+	sunset = time.mktime(datetime(year, month, day, sunset.hour+4, sunset.minute, sunset.second).timetuple())*1000
+	#sunrise = time.mktime(datetime(year, month, day, 6, 30, 0).timetuple())*1000
+	#sunset = time.mktime(datetime(year, month, day, 20, 30, 0).timetuple())*1000
+	
+	return sunrise, sunset
+	

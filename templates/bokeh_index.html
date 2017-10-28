@@ -1,0 +1,54 @@
+{% extends "bootstrap/base.html" %}
+
+{% block title %}Meteo Station{% endblock %}
+
+{% block head %}
+{{super()}}
+<link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+<link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.css" type="text/css" />
+<script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.4.min.js"></script>
+{{ script_1|safe }}
+{{ script_2|safe }}
+{{ script_3|safe }}
+{{ script_4|safe }}
+{% endblock %}
+
+{% block navbar %}
+<div class="navbar navbar-inverse" role="navigation">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle"
+			data-toggle="collapse" data-target=".navbar-collapse">
+				<span class="sr-only">Toggle navigation</span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="/">Meteo Station</a>
+		</div>
+		<div class="navbar-collapse collapse">
+			<ul class="nav navbar-nav">
+				<li><a href="/day_to_day">Day to Day</a></li>
+				<li><a href="/week_to_week">Week to Week</a></li>
+				<li><a href="/day">Daily</a></li>
+				<li><a href="/month">Monthly</a></li>
+				<li><a href="/contact">Contact me!</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="page-header">
+		<div align='center'>
+			{{ div_1|safe }}
+			{{ div_2|safe }}
+			{{ div_3|safe }}
+			{{ div_4|safe }}
+		</div>
+	</div>
+</div>
+{% endblock %}
+
