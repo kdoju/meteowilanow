@@ -10,15 +10,31 @@ from bokeh.models import DatetimeTickFormatter
 from bokeh.models import Range1d, Label, BoxAnnotation
 import plot
 import sun_info
+import os
 
 app = Flask(__name__)
 Mobility(app)
 bootstrap = Bootstrap(app)
+HOST = os.environ.get('HOST')
+PASS = os.environ.get('PASS')
+DB = os.environ.get('DB')
+USER = os.environ.get('USER')
+
 
 
 def data():
-    sql = "select DateTime, Temperature, WindChill, Pressure, Humidity, WindSpeed, WindGusts from Meteo"
-    con = MySQLdb.connect('localhost','kdoju_meteo','kdoju_meteo','kdoju_meteo')
+    sql = """SELECT
+                DateTime,
+                Temperature,
+                WindChill,
+                Pressure,
+                Humidity,
+                WindSpeed,
+                WindGusts
+            FROM Meteo
+            ORDER BY DateTime DESC
+            LIMIT 10000"""
+    con = MySQLdb.connect(HOST,USER,PASS,DB)
     df = pd.read_sql(sql, con, index_col='DateTime')
     con.close()
     return df
@@ -67,6 +83,7 @@ def x_constrain_data_week(df):
 def index():
 
     df = data()
+    # print df
     df_hr = df.groupby([datetime.strptime(datetime.strftime(x, "%Y-%m-%d %H:00"), "%Y-%m-%d %H:00") for x in df.index]).mean()
     df_hr_wind = df.groupby([datetime.strptime(\
         datetime.strftime(x, "%Y-%m-%d") + ' ' + str(int(datetime.strftime(x, "%H")) - int(datetime.strftime(x, "%H")) % 2) + ':00' \
@@ -79,7 +96,8 @@ def index():
     p_width, p_height = plot_size()
 
     #Temperature
-    temp = figure(title='Temperature [\xb0C]' + ' / Current: ' + str(round(df.Temperature[-1],1)), plot_width=p_width, plot_height=p_height, x_axis_type="datetime", tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'])
+    # temp = figure(title='Temperature [\xb0C]' + ' / Current: ' + str(round(df.Temperature[-1],1)), plot_width=p_width, plot_height=p_height, x_axis_type="datetime", tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'])
+    temp = figure(title='Temperature [C]' + ' / Current: ' + str(round(df.Temperature[-1],1)), plot_width=p_width, plot_height=p_height, x_axis_type="datetime", tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'])
     temp.diamond(df_hr.index, df_hr.WindChill, size=4)
     temp.line(df.index, df.Temperature, line_width=1.5, color='red')
     temp.x_range = Range1d(start, end)
@@ -92,8 +110,9 @@ def index():
     temp.add_layout(low_box)
     temp.add_layout(mid_box)
     temp.add_layout(high_box)
+    # temp_script, temp_div = unicode(components(temp), errors='ignore')
     temp_script, temp_div = components(temp)
-#    temp_script, temp_div = components(temp, wrap_plot_info = False)
+    # temp_script, temp_div = components(temp, wrap_plot_info = False)
     
     #Wind Speed
     wind = figure(title="Wind Speed [m/s]" + ' / Current: ' + str(round(df_hr_wind.WindSpeed[-1],1)), plot_width=p_width, plot_height=p_height, x_axis_type="datetime", tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'])
@@ -148,7 +167,8 @@ def day_to_day():
     curr_temp, temp_diff = get_data_diff('Temperature', df1, df2)
     temp_script, temp_div = plot.plot_comp(
         #general
-            title = 'Temperature [\xb0C]  /  Current: {}  /  Diff: {}{}'.format(str(round(curr_temp, 1)), '' if temp_diff < 0 else '+', str(round(temp_diff, 1))),
+            # title = 'Temperature [\xb0C]  /  Current: {}  /  Diff: {}{}'.format(str(round(curr_temp, 1)), '' if temp_diff < 0 else '+', str(round(temp_diff, 1))),
+            title = 'Temperature [C]  /  Current: {}  /  Diff: {}{}'.format(str(round(curr_temp, 1)), '' if temp_diff < 0 else '+', str(round(temp_diff, 1))),
             plot_width = p_width,
             plot_height = p_height,
             x_axis_type = 'datetime',
@@ -286,7 +306,8 @@ def week_to_week():
     curr_temp, temp_diff = get_data_diff('Temperature', df1, df2)
     temp_script, temp_div = plot.plot_comp(
         #general
-            title = 'Temperature [\xb0C]  /  Current: {}  /  Diff: {}{}'.format(str(round(curr_temp, 1)), '' if temp_diff < 0 else '+', str(round(temp_diff, 1))),
+            # title = 'Temperature [\xb0C]  /  Current: {}  /  Diff: {}{}'.format(str(round(curr_temp, 1)), '' if temp_diff < 0 else '+', str(round(temp_diff, 1))),
+            title = 'Temperature [C]  /  Current: {}  /  Diff: {}{}'.format(str(round(curr_temp, 1)), '' if temp_diff < 0 else '+', str(round(temp_diff, 1))),
             plot_width = p_width,
             plot_height = p_height,
             x_axis_type = 'datetime',
@@ -414,7 +435,8 @@ def daily():
     p_width, p_height = plot_size()
 
     #Temperature
-    temp = figure(title="Temperature [\xb0C]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
+    # temp = figure(title="Temperature [\xb0C]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
+    temp = figure(title="Temperature [C]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     temp.vbar(bottom=df_day.Temperature.min() - df_day.Temperature.min() % 2, top=df_day.Temperature, x=df_day.index, width=50000000, color='red', alpha=0.75)
     temp.toolbar.logo=None
     temp.toolbar_location="above"
@@ -451,7 +473,8 @@ def monthly():
     p_width, p_height = plot_size()
 
     #Temperature
-    temp = figure(title="Temperature [\xb0C]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
+    # temp = figure(title="Temperature [\xb0C]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
+    temp = figure(title="Temperature [C]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     temp.vbar(bottom=df_day.Temperature.min() - df_day.Temperature.min() % 2, top=df_day.Temperature, x=df_day.index, width=30*50000000, color='red', alpha=0.75)
     temp.toolbar.logo=None
     temp.toolbar_location="above"
