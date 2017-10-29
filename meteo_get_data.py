@@ -6,6 +6,7 @@ from lxml.html import parse
 from urllib import request
 from datetime import datetime
 from dotenv import load_dotenv
+import os
 
 APP_ROOT = os.path.join(os.path.dirname(__file__))
 dotenv_path = os.path.join(APP_ROOT, '.env')
