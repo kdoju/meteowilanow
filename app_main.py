@@ -44,8 +44,8 @@ def data():
     return df
 def plot_size():
     if request.MOBILE == True:
-        p_width = 320
-        p_height = 160
+        p_width = 360
+        p_height = 140
     else:
         p_width = 700
         p_height = 250
@@ -98,7 +98,7 @@ def index():
     temp.x_range = Range1d(start, end)
     temp.y_range = Range1d(df_hr_2.Temperature.min()-1, df_hr_2.Temperature.max()+1)
     temp.toolbar.logo=None
-    temp.toolbar_location=("above" if request.MOBILE == False else "right")
+    temp.toolbar_location=("above" if request.MOBILE == False else None)
     low_box = BoxAnnotation(top=10, fill_alpha=0.1, fill_color='blue')
     mid_box = BoxAnnotation(bottom=10, top=20, fill_alpha=0.1, fill_color='green')
     high_box = BoxAnnotation(bottom=20, fill_alpha=0.1, fill_color='red')
@@ -116,7 +116,7 @@ def index():
     wind.x_range = Range1d(start, end)
     wind.y_range = Range1d(df_hr_2.WindSpeed.min(), df_hr_2.WindSpeed.max())
     wind.toolbar.logo=None
-    wind.toolbar_location="above"
+    wind.toolbar_location=("above" if request.MOBILE == False else None)
     wind_script, wind_div = components(wind)
 #    wind_script, wind_div = components(wind, wrap_plot_info = False)
     
@@ -126,7 +126,7 @@ def index():
     pres.x_range = Range1d(start, end)
     pres.y_range = Range1d(df_hr_2.Pressure.min(), df_hr_2.Pressure.max())
     pres.toolbar.logo=None
-    pres.toolbar_location="above"
+    pres.toolbar_location=("above" if request.MOBILE == False else None)
     pres_script, pres_div = components(pres)
 #    pres_script, pres_div = components(pres, wrap_plot_info = False)
     
@@ -137,7 +137,7 @@ def index():
     # hum.y_range = Range1d(df_hr_2.Humidity.min(), df_hr_2.Humidity.max())
     hum.y_range = Range1d(49, 101)
     hum.toolbar.logo=None
-    hum.toolbar_location="above"
+    hum.toolbar_location=("above" if request.MOBILE == False else None)
     hum_script, hum_div = components(hum)
 #    hum_script, hum_div = components(hum, wrap_plot_info = False)
 
@@ -435,28 +435,28 @@ def daily():
     temp = figure(title="Temperature [C]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     temp.vbar(bottom=df_day.Temperature.min() - df_day.Temperature.min() % 2, top=df_day.Temperature, x=df_day.index, width=50000000, color='red', alpha=0.75)
     temp.toolbar.logo=None
-    temp.toolbar_location="above"
+    temp.toolbar_location=("above" if request.MOBILE == False else None)
     temp_script, temp_div = components(temp)
     
 	#Pressure
     pres = figure(title="Pressure [hPa]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     pres.vbar(bottom=df_day.Pressure.min() - df_day.Pressure.min() % 5, top=df_day.Pressure, x=df_day.index, width=50000000, color='green')
     pres.toolbar.logo=None
-    pres.toolbar_location="above"
+    pres.toolbar_location=("above" if request.MOBILE == False else None)
     pres_script, pres_div = components(pres)
     
     #Humidity
     hum = figure(title="Humidity [%]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     hum.vbar(bottom=df_day.Humidity.min() - df_day.Humidity.min() % 5, top=df_day.Humidity, x=df_day.index, width=50000000, color='blue')
     hum.toolbar.logo=None
-    hum.toolbar_location="above"
+    hum.toolbar_location=("above" if request.MOBILE == False else None)
     hum_script, hum_div = components(hum)
     
     #WindSpeed
     wind = figure(title="WindSpeed [m/s]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     wind.vbar(bottom=0, top=df_day.WindSpeed, x=df_day.index, width=50000000, color='green')
     wind.toolbar.logo=None
-    wind.toolbar_location="above"
+    wind.toolbar_location=("above" if request.MOBILE == False else None)
     wind_script, wind_div = components(wind)
     
     return render_template('bokeh_index.html', script_1=temp_script, div_1=temp_div, script_2=pres_script, div_2=pres_div, script_3=hum_script, div_3=hum_div, script_4=wind_script, div_4=wind_div)
@@ -473,28 +473,28 @@ def monthly():
     temp = figure(title="Temperature [C]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     temp.vbar(bottom=df_day.Temperature.min() - df_day.Temperature.min() % 2, top=df_day.Temperature, x=df_day.index, width=30*50000000, color='red', alpha=0.75)
     temp.toolbar.logo=None
-    temp.toolbar_location="above"
+    temp.toolbar_location=("above" if request.MOBILE == False else None)
     temp_script, temp_div = components(temp)
     
     #Pressure
     pres = figure(title="Pressure [hPa]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     pres.vbar(bottom=df_day.Pressure.min() - df_day.Pressure.min() % 5, top=df_day.Pressure, x=df_day.index, width=30*50000000, color='green')
     pres.toolbar.logo=None
-    pres.toolbar_location="above"
+    pres.toolbar_location=("above" if request.MOBILE == False else None)
     pres_script, pres_div = components(pres)
     
     #Humidity
     hum = figure(title="Humidity [%]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     hum.vbar(bottom=df_day.Humidity.min() - df_day.Humidity.min() % 5, top=df_day.Humidity, x=df_day.index, width=30*50000000, color='blue')
     hum.toolbar.logo=None
-    hum.toolbar_location="above"
+    hum.toolbar_location=("above" if request.MOBILE == False else None)
     hum_script, hum_div = components(hum)
     
     #WindSpeed
     wind = figure(title="WindSpeed [m/s]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     wind.vbar(bottom=0, top=df_day.WindSpeed, x=df_day.index, width=30*50000000, color='green')
     wind.toolbar.logo=None
-    wind.toolbar_location="above"
+    wind.toolbar_location=("above" if request.MOBILE == False else None)
     wind_script, wind_div = components(wind)
     
     return render_template('bokeh_index.html', script_1=temp_script, div_1=temp_div, script_2=pres_script, div_2=pres_div, script_3=hum_script, div_3=hum_div, script_4=wind_script, div_4=wind_div)
