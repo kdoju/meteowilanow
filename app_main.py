@@ -74,23 +74,22 @@ def x_constrain_data_week(df):
     
     return df1, df2
 
-df = data()
-sunrise, sunset = sun_info.get_sun_info('week')
+# sunrise, sunset = sun_info.get_sun_info('week')
 
-@app.route('/refresh')
-def refresh():
-    global df
-    global sunrise
-    global sunset
-    df = data()
-    sunrise, sunset = sun_info.get_sun_info('week')
-    return redirect(url_for('index'))
+# @app.route('/refresh')
+# def refresh():
+#     global df
+#     global sunrise
+#     global sunset
+#     df = data()
+#     sunrise, sunset = sun_info.get_sun_info('week')
+#     return redirect(url_for('index'))
 
 
 @app.route('/')
 def index():
 
-    # print df
+    df = data()
     df_hr = df.groupby([datetime.strptime(datetime.strftime(x, "%Y-%m-%d %H:00"), "%Y-%m-%d %H:00") for x in df.index]).mean()
     df_hr_wind = df.groupby([datetime.strptime(\
         datetime.strftime(x, "%Y-%m-%d") + ' ' + str(int(datetime.strftime(x, "%H")) - int(datetime.strftime(x, "%H")) % 2) + ':00' \
@@ -98,7 +97,8 @@ def index():
     dt = datetime.strptime(datetime.strftime(datetime.today(), "%Y-%m-%d 00:00"), "%Y-%m-%d %H:%M")
     start = dt - timedelta(days=dt.weekday())
     end = start + timedelta(days=7)
-    df_hr_2 = df_hr[df_hr.index >= start - timedelta(days=7)]
+    # df_hr_2 = df_hr[df_hr.index >= start - timedelta(days=7)]
+    df_hr_2 = df_hr[df_hr.index >= start]
 
     p_width, p_height = plot_size()
 
@@ -108,7 +108,7 @@ def index():
     temp.diamond(df_hr.index, df_hr.WindChill, size=4)
     temp.line(df.index, df.Temperature, line_width=1.5, color='red')
     temp.x_range = Range1d(start, end)
-    temp.y_range = Range1d(df_hr_2.Temperature.min(), df_hr_2.Temperature.max())
+    temp.y_range = Range1d(df_hr_2.Temperature.min()-1, df_hr_2.Temperature.max()+1)
     temp.toolbar.logo=None
     temp.toolbar_location="above"
     low_box = BoxAnnotation(top=10, fill_alpha=0.1, fill_color='blue')
@@ -146,7 +146,8 @@ def index():
     hum = figure(title="Humidity [%]" + ' / Current: ' + str(int(df_hr.Humidity[-1])), plot_width=p_width, plot_height=p_height, x_axis_type="datetime", tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'])
     hum.line(df_hr.index, df_hr.Humidity, line_width=1.5, color='blue')
     hum.x_range = Range1d(start, end)
-    hum.y_range = Range1d(df_hr_2.Humidity.min(), df_hr_2.Humidity.max())
+    # hum.y_range = Range1d(df_hr_2.Humidity.min(), df_hr_2.Humidity.max())
+    hum.y_range = Range1d(49, 101)
     hum.toolbar.logo=None
     hum.toolbar_location="above"
     hum_script, hum_div = components(hum)
@@ -162,9 +163,9 @@ def day_to_day():
     p_width, p_height = plot_size()
     
     #get sunrise and sunset time
-    # sunrise, sunset = sun_info.get_sun_info('day')
+    sunrise, sunset = sun_info.get_sun_info('day')
 
-    # df = data()
+    df = data()
     df_agg = df.groupby(pd.TimeGrouper(freq='30Min')).mean()
 
     df1, df2 = x_constrain_data_day(df)
@@ -301,9 +302,9 @@ def week_to_week():
     p_width, p_height = plot_size()
 
     #get sunrise and sunset time
-    # sunrise, sunset = sun_info.get_sun_info('week')
+    sunrise, sunset = sun_info.get_sun_info('week')
 
-    # df = data()
+    df = data()
     df_agg = df.groupby(pd.TimeGrouper(freq='1H')).mean()
     
     df1, df2 = x_constrain_data_week(df_agg)
