@@ -98,7 +98,7 @@ def index():
     temp.x_range = Range1d(start, end)
     temp.y_range = Range1d(df_hr_2.Temperature.min()-1, df_hr_2.Temperature.max()+1)
     temp.toolbar.logo=None
-    temp.toolbar_location="above"
+    temp.toolbar_location=("above" if request.MOBILE == False else "right")
     low_box = BoxAnnotation(top=10, fill_alpha=0.1, fill_color='blue')
     mid_box = BoxAnnotation(bottom=10, top=20, fill_alpha=0.1, fill_color='green')
     high_box = BoxAnnotation(bottom=20, fill_alpha=0.1, fill_color='red')
