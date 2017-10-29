@@ -11,15 +11,21 @@ from bokeh.models import Range1d, Label, BoxAnnotation
 import plot
 import sun_info
 import os
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 Mobility(app)
 bootstrap = Bootstrap(app)
-HOST = os.environ.get('HOST')
-PASS = os.environ.get('PASS')
-DB = os.environ.get('DB')
-USER = os.environ.get('USER')
 
+APP_ROOT = os.path.join(os.path.dirname(__file__))
+dotenv_path = os.path.join(APP_ROOT, '.env')
+load_dotenv(dotenv_path)
+
+HOST = os.getenv('HOST')
+USR = os.getenv('USR')
+PASS = os.getenv('PASS')
+DB = os.getenv('DB')
+print(HOST, USR, PASS, DB)
 
 
 def data():
@@ -34,7 +40,7 @@ def data():
             FROM Meteo
             ORDER BY DateTime DESC
             LIMIT 10000"""
-    con = MySQLdb.connect(HOST,USER,PASS,DB)
+    con = MySQLdb.connect(HOST,USR,PASS,DB)
     df = pd.read_sql(sql, con, index_col='DateTime')
     con.close()
     return df
