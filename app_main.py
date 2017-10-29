@@ -44,8 +44,8 @@ def data():
     return df
 def plot_size():
     if request.MOBILE == True:
-        p_width = 400
-        p_height = 180
+        p_width = 320
+        p_height = 160
     else:
         p_width = 700
         p_height = 250
@@ -73,18 +73,6 @@ def x_constrain_data_week(df):
     df2.index = [x + timedelta(7) for x in df2.index]
     
     return df1, df2
-
-# sunrise, sunset = sun_info.get_sun_info('week')
-
-# @app.route('/refresh')
-# def refresh():
-#     global df
-#     global sunrise
-#     global sunset
-#     df = data()
-#     sunrise, sunset = sun_info.get_sun_info('week')
-#     return redirect(url_for('index'))
-
 
 @app.route('/')
 def index():
