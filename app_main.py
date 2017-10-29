@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 from flask_mobility import Mobility
 from flask_bootstrap import Bootstrap
 import pandas as pd
@@ -37,14 +37,11 @@ def data():
                 WindSpeed,
                 WindGusts
             FROM Meteo
-            ORDER BY DateTime DESC
-            LIMIT 10000"""
+            WHERE DateTime > DATE(NOW()) - INTERVAL (7 + WEEKDAY(NOW())) DAY"""
     con = MySQLdb.connect(HOST,USR,PASS,DB)
     df = pd.read_sql(sql, con, index_col='DateTime')
     con.close()
     return df
-
-
 def plot_size():
     if request.MOBILE == True:
         p_width = 400
@@ -53,15 +50,11 @@ def plot_size():
         p_width = 700
         p_height = 250
     return p_width, p_height
-
-
 def get_data_diff(data, df1, df2):
     curr_data = df1[data][-1]
     prev_data = df2[data][df2.index == df1.index[-1]][-1]
     data_diff = curr_data - prev_data
     return curr_data, data_diff
-
-
 def x_constrain_data_day(df):
     
     df1 = df[df.index >= datetime.combine(date.today(), time()) - timedelta(0)]
@@ -71,8 +64,6 @@ def x_constrain_data_day(df):
     df2.index = [x + timedelta(1) for x in df2.index]
     
     return df1, df2
-
-
 def x_constrain_data_week(df):
     
     df1 = df[df.index >= datetime.combine(date.today(), time()) - timedelta(datetime.today().weekday())]
@@ -83,11 +74,22 @@ def x_constrain_data_week(df):
     
     return df1, df2
 
+df = data()
+sunrise, sunset = sun_info.get_sun_info('week')
+
+@app.route('/refresh')
+def refresh():
+    global df
+    global sunrise
+    global sunset
+    df = data()
+    sunrise, sunset = sun_info.get_sun_info('week')
+    return redirect(url_for('index'))
+
 
 @app.route('/')
 def index():
 
-    df = data()
     # print df
     df_hr = df.groupby([datetime.strptime(datetime.strftime(x, "%Y-%m-%d %H:00"), "%Y-%m-%d %H:00") for x in df.index]).mean()
     df_hr_wind = df.groupby([datetime.strptime(\
@@ -160,9 +162,9 @@ def day_to_day():
     p_width, p_height = plot_size()
     
     #get sunrise and sunset time
-    sunrise, sunset = sun_info.get_sun_info('day')
+    # sunrise, sunset = sun_info.get_sun_info('day')
 
-    df = data()
+    # df = data()
     df_agg = df.groupby(pd.TimeGrouper(freq='30Min')).mean()
 
     df1, df2 = x_constrain_data_day(df)
@@ -299,9 +301,9 @@ def week_to_week():
     p_width, p_height = plot_size()
 
     #get sunrise and sunset time
-    sunrise, sunset = sun_info.get_sun_info('week')
+    # sunrise, sunset = sun_info.get_sun_info('week')
 
-    df = data()
+    # df = data()
     df_agg = df.groupby(pd.TimeGrouper(freq='1H')).mean()
     
     df1, df2 = x_constrain_data_week(df_agg)
@@ -511,7 +513,7 @@ def monthly():
 
 @app.route('/contact')
 def contact():
-    return render_template('bokeh_index.html', content='email: kdoju83@gmail.com')
+    return render_template('bokeh_index.html', content='kdoju83@gmail.com')
             
 if __name__ == '__main__':
     app.run()
