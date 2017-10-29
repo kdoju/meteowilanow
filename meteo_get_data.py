@@ -50,7 +50,6 @@ if wind.find(',') > -1:
 
 insert = [date_time, temp, temp_wc, press, hum, wind, wind_gusts]
 
-# con = MySQLdb.connect('localhost','kdoju_meteo','kdoju_meteo','kdoju_meteo')
 con = MySQLdb.connect(HOST,USR,PASS,DB)
 c = con.cursor()
 
