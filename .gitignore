@@ -4,3 +4,5 @@ venv/
 .env
 __pycache__/
 *.py~
+kill_uwsgi.sh
+run_uwsgi.sh
