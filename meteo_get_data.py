@@ -5,6 +5,16 @@ import MySQLdb
 from lxml.html import parse
 from urllib import request
 from datetime import datetime
+from dotenv import load_dotenv
+
+APP_ROOT = os.path.join(os.path.dirname(__file__))
+dotenv_path = os.path.join(APP_ROOT, '.env')
+load_dotenv(dotenv_path)
+
+HOST = os.getenv('HOST')
+USR = os.getenv('USR')
+PASS = os.getenv('PASS')
+DB = os.getenv('DB')
 
 parsed = parse(request.urlopen('http://if.pw.edu.pl/~meteo'))
 doc = parsed.getroot()
@@ -39,7 +49,8 @@ if wind.find(',') > -1:
 
 insert = [date_time, temp, temp_wc, press, hum, wind, wind_gusts]
 
-con = MySQLdb.connect('localhost','kdoju_meteo','kdoju_meteo','kdoju_meteo')
+# con = MySQLdb.connect('localhost','kdoju_meteo','kdoju_meteo','kdoju_meteo')
+con = MySQLdb.connect(HOST,USR,PASS,DB)
 c = con.cursor()
 
 c.execute("SELECT DateTime FROM Meteo ORDER BY ID DESC LIMIT 1")

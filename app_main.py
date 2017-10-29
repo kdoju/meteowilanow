@@ -25,7 +25,6 @@ HOST = os.getenv('HOST')
 USR = os.getenv('USR')
 PASS = os.getenv('PASS')
 DB = os.getenv('DB')
-print(HOST, USR, PASS, DB)
 
 
 def data():
