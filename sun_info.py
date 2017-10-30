@@ -22,16 +22,16 @@ def get_sun_info(intvl):
     sunset_lst = []
 
     if intvl == 'day':
-        sunrise_lst.append(time.mktime(datetime(year, month, day, sunrise.hour+4, sunrise.minute, sunrise.second).timetuple())*1000)
-        sunset_lst.append(time.mktime(datetime(year, month, day, sunset.hour+4, sunset.minute, sunset.second).timetuple())*1000)
+        sunrise_lst.append(time.mktime(datetime(year, month, day, sunrise.hour+2, sunrise.minute, sunrise.second).timetuple())*1000)
+        sunset_lst.append(time.mktime(datetime(year, month, day, sunset.hour+2, sunset.minute, sunset.second).timetuple())*1000)
     elif intvl == 'week':
         for i in range(7):
             date = datetime.today() + timedelta(i - weekday)
             year = date.year
             month = date.month
             day = date.day
-            sunrise_lst.append(time.mktime(datetime(year, month, day, sunrise.hour + 4, sunrise.minute, sunrise.second).timetuple())*1000)
-            sunset_lst.append(time.mktime(datetime(year, month, day, sunset.hour + 4, sunset.minute, sunset.second).timetuple())*1000)
+            sunrise_lst.append(time.mktime(datetime(year, month, day, sunrise.hour + 2, sunrise.minute, sunrise.second).timetuple())*1000)
+            sunset_lst.append(time.mktime(datetime(year, month, day, sunset.hour + 2, sunset.minute, sunset.second).timetuple())*1000)
         
     sunrise = sunrise_lst
     sunset = sunset_lst
