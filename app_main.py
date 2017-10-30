@@ -86,7 +86,8 @@ def index():
     start = dt - timedelta(days=dt.weekday())
     end = start + timedelta(days=7)
     # df_hr_2 = df_hr[df_hr.index >= start - timedelta(days=7)]
-    df_hr_2 = df_hr[df_hr.index >= start]
+    # df_hr_2 = df_hr[df_hr.index >= start]
+    df_hr_2 = df_hr[df_hr.index >= datetime.today() - timedelta(days=7)]
 
     p_width, p_height = plot_size()
 
