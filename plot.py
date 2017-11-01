@@ -66,3 +66,30 @@ def plot_comp(
     return plot_script, plot_div
     
     
+def plot_pollution(df, mobile, title, plot_width, plot_height, tools, pollution_type, locations, colors, plot_start, plot_end, ranges):
+    fig = figure(
+                    title=title, \
+                    plot_width=plot_width, \
+                    plot_height=plot_height, \
+                    x_axis_type="datetime", \
+                    tools=tools
+                )
+
+    for location, color in zip(locations, colors):
+        fig.line(df.index, df[('value', location, pollution_type)], line_width=1.5, color=color, muted_line_alpha=0.2, legend=(location if not mobile else None))
+        fig.x_range = Range1d(plot_start, plot_end)
+        fig.toolbar.logo=None
+        fig.toolbar_location=("above")
+        fig.legend.location = "top_left"
+        fig.legend.click_policy="mute"
+
+    # Add color scale
+    ranges = ranges
+    colors = ['green','lightgreen','yellow','orange','orangered','red']
+    for bottom, top, color in zip(ranges[1:], ranges[:-1], colors):
+        box = BoxAnnotation(bottom=bottom, top=top, fill_alpha=0.3, fill_color=color)
+        fig.add_layout(box)
+
+    script, div = components(fig)
+    return script, div
+    
