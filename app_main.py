@@ -63,7 +63,7 @@ def plot_size():
         p_width = 360
         p_height = 140
     else:
-        p_width = 700
+        p_width = 530
         p_height = 250
     return p_width, p_height
 def get_data_diff(data, df1, df2):
@@ -181,25 +181,21 @@ def air_pollution():
                     x_axis_type="datetime", \
                     tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset']
                 )
-    pm25.line(df.index, df[('value','Ursynow','PM25')], line_width=1.5, color=color[0], muted_line_alpha=0.2, legend='Ursynow')
-    pm25.line(df.index, df[('value','Marszalkowska','PM25')], line_width=1.5, color=color[1], muted_line_alpha=0.2, legend='Marszalkowska')
+    pm25.line(df.index, df[('value','Ursynow','PM25')], line_width=1.5, color='red', muted_line_alpha=0.2, legend='Ursynow')
+    pm25.line(df.index, df[('value','Marszalkowska','PM25')], line_width=1.5, color='blue', muted_line_alpha=0.2, legend='Marszalkowska')
     pm25.x_range = Range1d(start, end)
     pm25.toolbar.logo=None
     pm25.toolbar_location=("above" if request.MOBILE == False else None)
     pm25.legend.location = "top_left"
     pm25.legend.click_policy="mute"
-    box_1 = BoxAnnotation(top=12, fill_alpha=0.3, fill_color='green')
-    box_2 = BoxAnnotation(bottom=12, top=36, fill_alpha=0.3, fill_color='lightgreen')
-    box_3 = BoxAnnotation(bottom=36, top=60, fill_alpha=0.3, fill_color='yellow')
-    box_4 = BoxAnnotation(bottom=60, top=84, fill_alpha=0.3, fill_color='orange')
-    box_5 = BoxAnnotation(bottom=84, top=120, fill_alpha=0.3, fill_color='orangered')
-    box_6 = BoxAnnotation(bottom=120, fill_alpha=0.3, fill_color='red')
-    pm25.add_layout(box_1)
-    pm25.add_layout(box_2)
-    pm25.add_layout(box_3)
-    pm25.add_layout(box_4)
-    pm25.add_layout(box_5)
-    pm25.add_layout(box_6)
+
+    # Add color scale
+    ranges = [0, 12, 36, 60, 84, 120, 1000]
+    colors = ['green','lightgreen','yellow','orange','orangered','red']
+    for bottom, top, color in zip(ranges[1:], ranges[:-1], colors):
+        box = BoxAnnotation(bottom=bottom, top=top, fill_alpha=0.3, fill_color=color)
+        pm25.add_layout(box)
+
     script_pm25, div_pm25 = components(pm25)
     
     pm10 = figure(
@@ -209,8 +205,8 @@ def air_pollution():
                     x_axis_type="datetime", \
                     tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset']
                 )
-    pm10.line(df.index, df[('value','Ursynow','PM10')], line_width=1.5, color=color[2], muted_line_alpha=0.2, legend='Ursynow')
-    pm10.line(df.index, df[('value','Marszalkowska','PM10')], line_width=1.5, color=color[3], muted_line_alpha=0.2, legend='Marszalkowska')
+    pm10.line(df.index, df[('value','Ursynow','PM10')], line_width=1.5, color='red', muted_line_alpha=0.2, legend='Ursynow')
+    pm10.line(df.index, df[('value','Marszalkowska','PM10')], line_width=1.5, color='blue', muted_line_alpha=0.2, legend='Marszalkowska')
     pm10.x_range = Range1d(start, end)
     pm10.legend.location = "top_left"
     pm10.legend.click_policy="mute"

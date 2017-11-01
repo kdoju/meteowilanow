@@ -20,41 +20,23 @@ DB = os.getenv('DB')
 count = 0
 records = 5
 
-war_urs_pm25 = requests.get('http://api.gios.gov.pl/pjp-api/rest/data/getData/3731')
-war_urs_pm10 = requests.get('http://api.gios.gov.pl/pjp-api/rest/data/getData/3730')
-war_mar_pm25 = requests.get('http://api.gios.gov.pl/pjp-api/rest/data/getData/16287')
-war_mar_pm10 = requests.get('http://api.gios.gov.pl/pjp-api/rest/data/getData/3694')
+sensor_ids = [3731, 3730, 16287, 3694, 3585, 3584, 3528, 3526, 16044, 17225, 17240, 17239]
+locations = ['Ursynow', 'Ursynow','Marszalkowska','Marszalkowska','Niepodleglosci','Niepodleglosci','Siedlce','Siedlce', 'Otwock', 'Otwock','Konstancin','Konstancin']
+types = ['PM25','PM10','PM25','PM10','PM25','PM10','PM25','PM10', 'PM25','PM10','PM25','PM10']
 
-data_mar_pm25 = json.loads(war_mar_pm25.text)
-data_mar_pm10 = json.loads(war_mar_pm10.text)
-data_urs_pm25 = json.loads(war_urs_pm25.text)
-data_urs_pm10 = json.loads(war_urs_pm10.text)
+df = pd.DataFrame()
 
-df_mar_pm25 = pd.DataFrame(data_mar_pm25['values'])
-df_mar_pm25 = df_mar_pm25[:records]
-df_mar_pm25['location'] = 'Marszalkowska'
-df_mar_pm25['type'] = 'PM25'
+for sensor_id, location, pol_type in zip(sensor_ids, locations, types):
+    raw_data = requests.get('http://api.gios.gov.pl/pjp-api/rest/data/getData/' + str(sensor_id))
+    json_data = json.loads(raw_data.text)
+    df_current = pd.DataFrame(json_data['values'])
+    df_current = df_current[:records]
+    df_current['location'] = location
+    df_current['type'] = pol_type
+    df_current = df_current[::-1]
+    df = pd.concat([df, df_current], axis=0)
 
-df_mar_pm10 = pd.DataFrame(data_mar_pm10['values'])
-df_mar_pm10 = df_mar_pm10[:records]
-df_mar_pm10['location'] = 'Marszalkowska'
-df_mar_pm10['type'] = 'PM10'
-
-df_urs_pm25 = pd.DataFrame(data_urs_pm25['values'])
-df_urs_pm25 = df_urs_pm25[:records]
-df_urs_pm25['location'] = 'Ursynow'
-df_urs_pm25['type'] = 'PM25'
-
-df_urs_pm10 = pd.DataFrame(data_urs_pm10['values'])
-df_urs_pm10 = df_urs_pm10[:records]
-df_urs_pm10['location'] = 'Ursynow'
-df_urs_pm10['type'] = 'PM10'
-
-df = pd.concat([df_mar_pm10, df_mar_pm25, df_urs_pm10, df_urs_pm25], axis=0)
 df = df.round(2)
-# df = df.set_index(['date','location','type'])
-df = df[::-1]
-# print df
 
 con = MySQLdb.connect(HOST,USR,PASS,DB)
 c = con.cursor()
