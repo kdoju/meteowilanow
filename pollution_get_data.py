@@ -16,6 +16,7 @@ USR = os.getenv('USR')
 PASS = os.getenv('PASS')
 DB = os.getenv('DB')
 
+count = 0
 records = 5
 
 war_urs_pm25 = requests.get('http://api.gios.gov.pl/pjp-api/rest/data/getData/3731')
@@ -64,10 +65,13 @@ for index, row in df.iterrows():
                         VALUES (%s, %s, %s, %s);""", \
                         (row['date'], row['location'], row['type'], row['value']))
             print "Row inserted successfully: ", row['date'], row['location'], row['type'], row['value']
+            count += 1
         except MySQLdb.IntegrityError:
             # print "IntegrityError: Can't insert record to table: " + row['date'], row['location'], row['type'], row['value']
             pass
-    else:
-        print "Row not inserted (nan): ", row['date'], row['location'], row['type'], row['value']
+    # else:
+    #     print "Row not inserted (nan): ", row['date'], row['location'], row['type'], row['value']
 
 con.commit()
+
+print 'Rows inserted: ' + str(count)

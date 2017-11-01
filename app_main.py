@@ -8,6 +8,7 @@ from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import DatetimeTickFormatter
 from bokeh.models import Range1d, Label, BoxAnnotation
+from bokeh.palettes import Spectral4 as color
 import plot
 import sun_info
 import os
@@ -42,21 +43,21 @@ def data():
     df = pd.read_sql(sql, con, index_col='DateTime')
     con.close()
     return df
-# def pollution_data():
-#     sql = """SELECT
-#                 date_time,
-#                 location,
-#                 type,
-#                 value
-#             FROM Pollution
-#             # WHERE date_time > DATE(NOW()) - INTERVAL (7 + WEEKDAY(NOW())) DAY
-#             """
-#     con = MySQLdb.connect(HOST,USR,PASS,DB)
-#     # df = pd.read_sql(sql, con, index_col='date_time')
-#     df = pd.read_sql(sql, con)
-#     df = df.set_index(['date_time','location','type']).unstack(['location','type'])
-#     con.close()
-#     return df
+def pollution_data():
+    sql = """SELECT
+                date_time,
+                location,
+                type,
+                value
+            FROM Pollution
+            # WHERE date_time > DATE(NOW()) - INTERVAL (7 + WEEKDAY(NOW())) DAY
+            """
+    con = MySQLdb.connect(HOST,USR,PASS,DB)
+    # df = pd.read_sql(sql, con, index_col='date_time')
+    df = pd.read_sql(sql, con)
+    df = df.set_index(['date_time','location','type']).unstack(['location','type'])
+    con.close()
+    return df
 def plot_size():
     if request.MOBILE == True:
         p_width = 360
@@ -161,40 +162,57 @@ def index():
     return render_template('bokeh_index.html', script_1=temp_script, div_1=temp_div, script_2=pres_script, div_2=pres_div, script_3=hum_script, div_3=hum_div, script_4=wind_script, div_4=wind_div)
 
     
-# @app.route('/air_pollution')
-# def air_pollution():
+@app.route('/air_pollution')
+def air_pollution():
 
-#     df = pollution_data()
-#     dt = datetime.strptime(datetime.strftime(datetime.today(), "%Y-%m-%d 00:00"), "%Y-%m-%d %H:%M")
-#     start = dt - timedelta(days=dt.weekday())
-#     end = start + timedelta(days=7)
-#     df_hr_2 = df_hr[df_hr.index >= datetime.today() - timedelta(days=7)]
+    df = pollution_data()
+    dt = datetime.strptime(datetime.strftime(datetime.today(), "%Y-%m-%d 00:00"), "%Y-%m-%d %H:%M")
+    start = dt - timedelta(days=dt.weekday())
+    end = start + timedelta(days=7)
 
-#     p_width, p_height = plot_size()
+    p_width, p_height = plot_size()
 
-#     #Pollution
-#     pm_urs = figure(
-#                     title='Ursynów' + ' / Current: ' + str(round(df[('value','Ursynow','PM25')][-1],1)), \
-#                     plot_width=p_width, \
-#                     plot_height=p_height, \
-#                     x_axis_type="datetime", \
-#                     tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset']
-#                 )
-#     pm_urs.line(df.index, df[('value','Ursynow','PM25')], line_width=1.5, color='red')
-#     # pm_urs.x_range = Range1d(start, end)
-#     # pm_urs.y_range = Range1d(df_hr_2.Temperature.min()-1, df_hr_2.Temperature.max()+1)
-#     # pm_urs.toolbar.logo=None
-#     # pm_urs.toolbar_location=("above" if request.MOBILE == False else None)
-#     # low_box = BoxAnnotation(top=10, fill_alpha=0.1, fill_color='blue')
-#     # mid_box = BoxAnnotation(bottom=10, top=20, fill_alpha=0.1, fill_color='green')
-#     # high_box = BoxAnnotation(bottom=20, fill_alpha=0.1, fill_color='red')
-#     # pm_urs.add_layout(low_box)
-#     # pm_urs.add_layout(mid_box)
-#     # pm_urs.add_layout(high_box)
-#     script, div = components(pm_urs)
+    #PM25
+    pm25 = figure(
+                    title='PM25', \
+                    # title='Ursynow' + ' / Current: ' + str(round(df[('value','Ursynow','PM25')][-1],1)), \
+                    plot_width=p_width, \
+                    plot_height=p_height, \
+                    x_axis_type="datetime", \
+                    tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset']
+                )
+    pm25.line(df.index, df[('value','Ursynow','PM25')], line_width=1.5, color=color[0], muted_line_alpha=0.2, legend='Ursynow')
+    pm25.line(df.index, df[('value','Marszalkowska','PM25')], line_width=1.5, color=color[1], muted_line_alpha=0.2, legend='Marszalkowska')
+    pm25.x_range = Range1d(start, end)
+    pm25.legend.location = "top_left"
+    pm25.legend.click_policy="mute"
+    pm25.toolbar.logo=None
+    pm25.toolbar_location=("above" if request.MOBILE == False else None)
+    # low_box = BoxAnnotation(top=10, fill_alpha=0.1, fill_color='blue')
+    # mid_box = BoxAnnotation(bottom=10, top=20, fill_alpha=0.1, fill_color='green')
+    # high_box = BoxAnnotation(bottom=20, fill_alpha=0.1, fill_color='red')
+    # pm25.add_layout(low_box)
+    # pm25.add_layout(mid_box)
+    # pm25.add_layout(high_box)
+    script_pm25, div_pm25 = components(pm25)
     
-
-#     return render_template('bokeh_index.html', script_1=script, div_1=div, script_2='', div_2='', script_3='', div_3='', script_4='', div_4='')
+    pm10 = figure(
+                    title='PM10', \
+                    plot_width=p_width, \
+                    plot_height=p_height, \
+                    x_axis_type="datetime", \
+                    tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset']
+                )
+    pm10.line(df.index, df[('value','Ursynow','PM10')], line_width=1.5, color=color[2], muted_line_alpha=0.2, legend='Ursynow')
+    pm10.line(df.index, df[('value','Marszalkowska','PM10')], line_width=1.5, color=color[3], muted_line_alpha=0.2, legend='Marszalkowska')
+    pm10.x_range = Range1d(start, end)
+    pm10.legend.location = "top_left"
+    pm10.legend.click_policy="mute"
+    pm10.toolbar.logo=None
+    pm10.toolbar_location=("above" if request.MOBILE == False else None)
+    script_pm10, div_pm10 = components(pm10)
+    
+    return render_template('bokeh_index.html', script_1=script_pm25, div_1=div_pm25, script_2=script_pm10, div_2=div_pm10, script_3='', div_3='', script_4='', div_4='')
 
     
 @app.route('/day_to_day')
@@ -485,28 +503,28 @@ def daily():
     temp = figure(title="Temperature [C]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     temp.vbar(bottom=df_day.Temperature.min() - df_day.Temperature.min() % 2, top=df_day.Temperature, x=df_day.index, width=50000000, color='red', alpha=0.75)
     temp.toolbar.logo=None
-    temp.toolbar_location=("above" if request.MOBILE == False else None)
+    temp.toolbar_location = ("above" if request.MOBILE == False else None)
     temp_script, temp_div = components(temp)
     
 	#Pressure
     pres = figure(title="Pressure [hPa]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     pres.vbar(bottom=df_day.Pressure.min() - df_day.Pressure.min() % 5, top=df_day.Pressure, x=df_day.index, width=50000000, color='green')
     pres.toolbar.logo=None
-    pres.toolbar_location=("above" if request.MOBILE == False else None)
+    pres.toolbar_location = ("above" if request.MOBILE == False else None)
     pres_script, pres_div = components(pres)
     
     #Humidity
     hum = figure(title="Humidity [%]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     hum.vbar(bottom=df_day.Humidity.min() - df_day.Humidity.min() % 5, top=df_day.Humidity, x=df_day.index, width=50000000, color='blue')
     hum.toolbar.logo=None
-    hum.toolbar_location=("above" if request.MOBILE == False else None)
+    hum.toolbar_location = ("above" if request.MOBILE == False else None)
     hum_script, hum_div = components(hum)
     
     #WindSpeed
     wind = figure(title="WindSpeed [m/s]", plot_width=p_width, plot_height=250, x_axis_type="datetime")
     wind.vbar(bottom=0, top=df_day.WindSpeed, x=df_day.index, width=50000000, color='green')
     wind.toolbar.logo=None
-    wind.toolbar_location=("above" if request.MOBILE == False else None)
+    wind.toolbar_location = ("above" if request.MOBILE == False else None)
     wind_script, wind_div = components(wind)
     
     return render_template('bokeh_index.html', script_1=temp_script, div_1=temp_div, script_2=pres_script, div_2=pres_div, script_3=hum_script, div_3=hum_div, script_4=wind_script, div_4=wind_div)
