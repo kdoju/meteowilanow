@@ -114,7 +114,7 @@ def index():
     # df_hr_2 = df_hr[df_hr.index >= plot_start]
     df_hr_2 = df_hr[df_hr.index >= datetime.today() - timedelta(days=7)]
 
-    plot_width, plot_height = plot_properties()
+    mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
 
     #Temperature
     # temp = figure(title='Temperature [\xb0C]' + ' / Current: ' + str(round(df.Temperature[-1],1)), plot_width=plot_width, plot_height=plot_height, x_axis_type="datetime", tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'])
@@ -169,7 +169,6 @@ def index():
 
 
     return render_template('bokeh_index.html', script_1=temp_script, div_1=temp_div, script_2=pres_script, div_2=pres_div, script_3=hum_script, div_3=hum_div, script_4=wind_script, div_4=wind_div)
-
     
 @app.route('/air_pollution')
 def air_pollution():
@@ -241,12 +240,11 @@ def air_pollution():
     )
     
     return render_template('bokeh_index.html', script_1=script_pm25, div_1=div_pm25, script_2=script_pm10, div_2=div_pm10, script_3=script_pm25_oth, div_3=div_pm25_oth, script_4=script_pm10_oth, div_4=div_pm10_oth)
-
     
 @app.route('/day_to_day')
 def day_to_day():
 
-    plot_width, plot_height = plot_properties()
+    mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
     
     #get sunrise and sunset time
     sunrise, sunset = sun_info.get_sun_info('day')
@@ -384,7 +382,7 @@ def day_to_day():
 @app.route('/week_to_week')
 def week_to_week():
     
-    plot_width, plot_height = plot_properties()
+    mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
 
     #get sunrise and sunset time
     sunrise, sunset = sun_info.get_sun_info('week')
@@ -524,7 +522,7 @@ def daily():
     
     df = data()
     df_day = df.groupby([datetime.strptime(datetime.strftime(x, "%Y-%m-%d"), "%Y-%m-%d") for x in df.index]).mean()
-    plot_width, plot_height = plot_properties()
+    mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
 
     #Temperature
     # temp = figure(title="Temperature [\xb0C]", plot_width=plot_width, plot_height=250, x_axis_type="datetime")
@@ -562,7 +560,7 @@ def monthly():
     
     df = data()
     df_day = df.groupby([datetime.strptime(datetime.strftime(x, "%Y-%m"), "%Y-%m") for x in df.index]).mean()
-    plot_width, plot_height = plot_properties()
+    mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
 
     #Temperature
     # temp = figure(title="Temperature [\xb0C]", plot_width=plot_width, plot_height=250, x_axis_type="datetime")
