@@ -65,7 +65,7 @@ for index, row in df.iterrows():
             c.execute("""INSERT INTO Pollution (date_time, location, type, value)
                         VALUES (%s, %s, %s, %s);""", \
                         (row['date'], row['location'], row['type'], row['value']))
-            print "Row inserted successfully: ", row['date'], row['location'], row['type'], row['value']
+            print ("Row inserted successfully: ", row['date'], row['location'], row['type'], row['value'])
             count += 1
         except MySQLdb.IntegrityError:
             # print "IntegrityError: Can't insert record to table: " + row['date'], row['location'], row['type'], row['value']
@@ -75,4 +75,4 @@ for index, row in df.iterrows():
 
 con.commit()
 
-print 'Rows inserted: ' + str(count)
+print ('Rows inserted: ' + str(count))

@@ -2,7 +2,7 @@
 venv/
 *.pyc
 .env
-__pycache__/
+__pycache__/*
 *.py~
 kill_uwsgi.sh
 run_uwsgi.sh
