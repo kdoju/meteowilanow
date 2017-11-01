@@ -184,16 +184,22 @@ def air_pollution():
     pm25.line(df.index, df[('value','Ursynow','PM25')], line_width=1.5, color=color[0], muted_line_alpha=0.2, legend='Ursynow')
     pm25.line(df.index, df[('value','Marszalkowska','PM25')], line_width=1.5, color=color[1], muted_line_alpha=0.2, legend='Marszalkowska')
     pm25.x_range = Range1d(start, end)
-    pm25.legend.location = "top_left"
-    pm25.legend.click_policy="mute"
     pm25.toolbar.logo=None
     pm25.toolbar_location=("above" if request.MOBILE == False else None)
-    # low_box = BoxAnnotation(top=10, fill_alpha=0.1, fill_color='blue')
-    # mid_box = BoxAnnotation(bottom=10, top=20, fill_alpha=0.1, fill_color='green')
-    # high_box = BoxAnnotation(bottom=20, fill_alpha=0.1, fill_color='red')
-    # pm25.add_layout(low_box)
-    # pm25.add_layout(mid_box)
-    # pm25.add_layout(high_box)
+    pm25.legend.location = "top_left"
+    pm25.legend.click_policy="mute"
+    box_1 = BoxAnnotation(top=12, fill_alpha=0.3, fill_color='green')
+    box_2 = BoxAnnotation(bottom=12, top=36, fill_alpha=0.3, fill_color='lightgreen')
+    box_3 = BoxAnnotation(bottom=36, top=60, fill_alpha=0.3, fill_color='yellow')
+    box_4 = BoxAnnotation(bottom=60, top=84, fill_alpha=0.3, fill_color='orange')
+    box_5 = BoxAnnotation(bottom=84, top=120, fill_alpha=0.3, fill_color='orangered')
+    box_6 = BoxAnnotation(bottom=120, fill_alpha=0.3, fill_color='red')
+    pm25.add_layout(box_1)
+    pm25.add_layout(box_2)
+    pm25.add_layout(box_3)
+    pm25.add_layout(box_4)
+    pm25.add_layout(box_5)
+    pm25.add_layout(box_6)
     script_pm25, div_pm25 = components(pm25)
     
     pm10 = figure(
