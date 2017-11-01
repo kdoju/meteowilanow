@@ -14,7 +14,7 @@ def plot_comp(
     xmin = '',
     xmax = '',
     #ytick_interval = '',
-    tools = ['pan','xwheel_zoom','box_zoom','ywheel_zoom','resize','reset'],
+    tools = ['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'],
 #    tools = ['pan','xwheel_zoom','box_zoom','ywheel_zoom','crosshair','resize','reset'],
     sunrise = 0,
     sunset = 0,
