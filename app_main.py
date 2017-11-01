@@ -63,8 +63,8 @@ def plot_size():
         p_width = 360
         p_height = 140
     else:
-        p_width = 530
-        p_height = 250
+        p_width = 800
+        p_height = 350
     return p_width, p_height
 def get_data_diff(data, df1, df2):
     curr_data = df1[data][-1]
@@ -167,25 +167,35 @@ def air_pollution():
 
     df = pollution_data()
     dt = datetime.strptime(datetime.strftime(datetime.today(), "%Y-%m-%d 00:00"), "%Y-%m-%d %H:%M")
-    start = dt - timedelta(days=dt.weekday())
-    end = start + timedelta(days=7)
+    if not request.MOBILE:
+        start = dt - timedelta(days=dt.weekday())
+        end = start + timedelta(days=7)
+    else:
+        start = dt - timedelta(days=2)
+        end = start + timedelta(days=1)
+        
 
     p_width, p_height = plot_size()
 
-    #PM25
+    #PM25 plot
     pm25 = figure(
-                    title='PM25', \
+                    title='PM25 Warszawa', \
                     # title='Ursynow' + ' / Current: ' + str(round(df[('value','Ursynow','PM25')][-1],1)), \
                     plot_width=p_width, \
                     plot_height=p_height, \
                     x_axis_type="datetime", \
-                    tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset']
+                    tools=(['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'] if not request.MOBILE else ['box_zoom','reset'])
                 )
     pm25.line(df.index, df[('value','Ursynow','PM25')], line_width=1.5, color='red', muted_line_alpha=0.2, legend='Ursynow')
     pm25.line(df.index, df[('value','Marszalkowska','PM25')], line_width=1.5, color='blue', muted_line_alpha=0.2, legend='Marszalkowska')
+    pm25.line(df.index, df[('value','Niepodleglosci','PM25')], line_width=1.5, color='green', muted_line_alpha=0.2, legend='Niepodleglosci')
+    # pm25.line(df.index, df[('value','Konstancin','PM25')], line_width=1.5, color='brown', muted_line_alpha=0.2, legend='Konstancin')
+    # pm25.line(df.index, df[('value','Otwock','PM25')], line_width=1.5, color='purple', muted_line_alpha=0.2, legend='Otwock')
+    # pm25.line(df.index, df[('value','Siedlce','PM25')], line_width=1.5, color='orange', muted_line_alpha=0.2, legend='Siedlce')
     pm25.x_range = Range1d(start, end)
     pm25.toolbar.logo=None
-    pm25.toolbar_location=("above" if request.MOBILE == False else None)
+    pm25.toolbar_location=("above")
+    # pm25.toolbar_location=("above" if not request.MOBILE else None)
     pm25.legend.location = "top_left"
     pm25.legend.click_policy="mute"
 
@@ -198,12 +208,13 @@ def air_pollution():
 
     script_pm25, div_pm25 = components(pm25)
     
+    # PM10 plot
     pm10 = figure(
                     title='PM10', \
                     plot_width=p_width, \
                     plot_height=p_height, \
                     x_axis_type="datetime", \
-                    tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset']
+                    tools=(['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'] if not request.MOBILE else ['box_zoom','reset'])
                 )
     pm10.line(df.index, df[('value','Ursynow','PM10')], line_width=1.5, color='red', muted_line_alpha=0.2, legend='Ursynow')
     pm10.line(df.index, df[('value','Marszalkowska','PM10')], line_width=1.5, color='blue', muted_line_alpha=0.2, legend='Marszalkowska')
@@ -211,7 +222,7 @@ def air_pollution():
     pm10.legend.location = "top_left"
     pm10.legend.click_policy="mute"
     pm10.toolbar.logo=None
-    pm10.toolbar_location=("above" if request.MOBILE == False else None)
+    pm10.toolbar_location=("above")
     script_pm10, div_pm10 = components(pm10)
     
     return render_template('bokeh_index.html', script_1=script_pm25, div_1=div_pm25, script_2=script_pm10, div_2=div_pm10, script_3='', div_3='', script_4='', div_4='')
