@@ -60,8 +60,8 @@ def pollution_data():
     return df
 def plot_size():
     if request.MOBILE == True:
-        p_width = 360
-        p_height = 140
+        p_width = 320
+        p_height = 200
     else:
         p_width = 800
         p_height = 350
@@ -186,9 +186,9 @@ def air_pollution():
                     x_axis_type="datetime", \
                     tools=(['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'] if not request.MOBILE else ['box_zoom','reset'])
                 )
-    pm25.line(df.index, df[('value','Ursynow','PM25')], line_width=1.5, color='red', muted_line_alpha=0.2, legend='Ursynow')
-    pm25.line(df.index, df[('value','Marszalkowska','PM25')], line_width=1.5, color='blue', muted_line_alpha=0.2, legend='Marszalkowska')
-    pm25.line(df.index, df[('value','Niepodleglosci','PM25')], line_width=1.5, color='green', muted_line_alpha=0.2, legend='Niepodleglosci')
+    pm25.line(df.index, df[('value','Ursynow','PM25')], line_width=1.5, color='red', muted_line_alpha=0.2, legend=('Ursynow' if not request.MOBILE else None))
+    pm25.line(df.index, df[('value','Marszalkowska','PM25')], line_width=1.5, color='blue', muted_line_alpha=0.2, legend=('Marszalkowska' if not request.MOBILE else None))
+    pm25.line(df.index, df[('value','Niepodleglosci','PM25')], line_width=1.5, color='green', muted_line_alpha=0.2, legend=('Niepodleglosci' if not request.MOBILE else None))
     # pm25.line(df.index, df[('value','Konstancin','PM25')], line_width=1.5, color='brown', muted_line_alpha=0.2, legend='Konstancin')
     # pm25.line(df.index, df[('value','Otwock','PM25')], line_width=1.5, color='purple', muted_line_alpha=0.2, legend='Otwock')
     # pm25.line(df.index, df[('value','Siedlce','PM25')], line_width=1.5, color='orange', muted_line_alpha=0.2, legend='Siedlce')
