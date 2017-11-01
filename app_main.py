@@ -42,6 +42,21 @@ def data():
     df = pd.read_sql(sql, con, index_col='DateTime')
     con.close()
     return df
+# def pollution_data():
+#     sql = """SELECT
+#                 date_time,
+#                 location,
+#                 type,
+#                 value
+#             FROM Pollution
+#             # WHERE date_time > DATE(NOW()) - INTERVAL (7 + WEEKDAY(NOW())) DAY
+#             """
+#     con = MySQLdb.connect(HOST,USR,PASS,DB)
+#     # df = pd.read_sql(sql, con, index_col='date_time')
+#     df = pd.read_sql(sql, con)
+#     df = df.set_index(['date_time','location','type']).unstack(['location','type'])
+#     con.close()
+#     return df
 def plot_size():
     if request.MOBILE == True:
         p_width = 360
@@ -119,7 +134,7 @@ def index():
     wind.toolbar.logo=None
     wind.toolbar_location=("above" if request.MOBILE == False else None)
     wind_script, wind_div = components(wind)
-#    wind_script, wind_div = components(wind, wrap_plot_info = False)
+    # wind_script, wind_div = components(wind, wrap_plot_info = False)
     
     #Pressure
     pres = figure(title="Pressure [hPa]" + ' / Current: ' + str(int(df_hr.Pressure[-1])), plot_width=p_width, plot_height=p_height, x_axis_type="datetime", tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'])
@@ -129,7 +144,7 @@ def index():
     pres.toolbar.logo=None
     pres.toolbar_location=("above" if request.MOBILE == False else None)
     pres_script, pres_div = components(pres)
-#    pres_script, pres_div = components(pres, wrap_plot_info = False)
+    # pres_script, pres_div = components(pres, wrap_plot_info = False)
     
     #Humidity
     hum = figure(title="Humidity [%]" + ' / Current: ' + str(int(df_hr.Humidity[-1])), plot_width=p_width, plot_height=p_height, x_axis_type="datetime", tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'])
@@ -140,10 +155,46 @@ def index():
     hum.toolbar.logo=None
     hum.toolbar_location=("above" if request.MOBILE == False else None)
     hum_script, hum_div = components(hum)
-#    hum_script, hum_div = components(hum, wrap_plot_info = False)
+    # hum_script, hum_div = components(hum, wrap_plot_info = False)
 
 
     return render_template('bokeh_index.html', script_1=temp_script, div_1=temp_div, script_2=pres_script, div_2=pres_div, script_3=hum_script, div_3=hum_div, script_4=wind_script, div_4=wind_div)
+
+    
+# @app.route('/air_pollution')
+# def air_pollution():
+
+#     df = pollution_data()
+#     dt = datetime.strptime(datetime.strftime(datetime.today(), "%Y-%m-%d 00:00"), "%Y-%m-%d %H:%M")
+#     start = dt - timedelta(days=dt.weekday())
+#     end = start + timedelta(days=7)
+#     df_hr_2 = df_hr[df_hr.index >= datetime.today() - timedelta(days=7)]
+
+#     p_width, p_height = plot_size()
+
+#     #Pollution
+#     pm_urs = figure(
+#                     title='Ursynów' + ' / Current: ' + str(round(df[('value','Ursynow','PM25')][-1],1)), \
+#                     plot_width=p_width, \
+#                     plot_height=p_height, \
+#                     x_axis_type="datetime", \
+#                     tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset']
+#                 )
+#     pm_urs.line(df.index, df[('value','Ursynow','PM25')], line_width=1.5, color='red')
+#     # pm_urs.x_range = Range1d(start, end)
+#     # pm_urs.y_range = Range1d(df_hr_2.Temperature.min()-1, df_hr_2.Temperature.max()+1)
+#     # pm_urs.toolbar.logo=None
+#     # pm_urs.toolbar_location=("above" if request.MOBILE == False else None)
+#     # low_box = BoxAnnotation(top=10, fill_alpha=0.1, fill_color='blue')
+#     # mid_box = BoxAnnotation(bottom=10, top=20, fill_alpha=0.1, fill_color='green')
+#     # high_box = BoxAnnotation(bottom=20, fill_alpha=0.1, fill_color='red')
+#     # pm_urs.add_layout(low_box)
+#     # pm_urs.add_layout(mid_box)
+#     # pm_urs.add_layout(high_box)
+#     script, div = components(pm_urs)
+    
+
+#     return render_template('bokeh_index.html', script_1=script, div_1=div, script_2='', div_2='', script_3='', div_3='', script_4='', div_4='')
 
     
 @app.route('/day_to_day')
@@ -283,7 +334,6 @@ def day_to_day():
 
     
     return render_template('bokeh_index.html', script_1=temp_script, div_1=temp_div, script_2=pres_script, div_2=pres_div, script_3=hum_script, div_3=hum_div, script_4=wind_script, div_4=wind_div)
-
     
 @app.route('/week_to_week')
 def week_to_week():
@@ -422,7 +472,6 @@ def week_to_week():
 
 
     return render_template('bokeh_index.html', script_1=temp_script, div_1=temp_div, script_2=pres_script, div_2=pres_div, script_3=hum_script, div_3=hum_div, script_4=wind_script, div_4=wind_div)
-    
 
 @app.route('/day')
 def daily():
@@ -499,7 +548,6 @@ def monthly():
     wind_script, wind_div = components(wind)
     
     return render_template('bokeh_index.html', script_1=temp_script, div_1=temp_div, script_2=pres_script, div_2=pres_div, script_3=hum_script, div_3=hum_div, script_4=wind_script, div_4=wind_div)
-
 
 @app.route('/contact')
 def contact():

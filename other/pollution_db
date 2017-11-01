@@ -1,0 +1,13 @@
+create table Pollution
+    (
+        id          int(11)         not null    auto_increment      ,
+        date_time   datetime        not null                        ,
+        location    varchar(30)     not null                        ,
+        type        char(10)        not null                        ,
+        value       float           not null                        ,
+
+        PRIMARY KEY (id)                                            ,
+        UNIQUE INDEX (date_time, location, type)
+
+    )
+;
