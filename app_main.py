@@ -60,7 +60,7 @@ def pollution_data():
     return df
 def plot_size():
     if request.MOBILE == True:
-        p_width = 320
+        p_width = 300
         p_height = 200
     else:
         p_width = 800
