@@ -172,7 +172,7 @@ def air_pollution():
         end = start + timedelta(days=7)
     else:
         start = dt - timedelta(days=2)
-        end = start + timedelta(days=1)
+        end = dt + timedelta(days=1)
         
 
     p_width, p_height = plot_size()
@@ -184,7 +184,7 @@ def air_pollution():
                     plot_width=p_width, \
                     plot_height=p_height, \
                     x_axis_type="datetime", \
-                    tools=(['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'] if not request.MOBILE else ['box_zoom','reset'])
+                    tools=(['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'] if not request.MOBILE else ['pan','box_zoom','reset'])
                 )
     pm25.line(df.index, df[('value','Ursynow','PM25')], line_width=1.5, color='red', muted_line_alpha=0.2, legend=('Ursynow' if not request.MOBILE else None))
     pm25.line(df.index, df[('value','Marszalkowska','PM25')], line_width=1.5, color='blue', muted_line_alpha=0.2, legend=('Marszalkowska' if not request.MOBILE else None))
