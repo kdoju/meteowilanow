@@ -76,7 +76,7 @@ def plot_properties():
         plot_width = 300
         plot_height = 200
         tools = ['pan','box_zoom','reset']
-        plot_start = dt - timedelta(days=1)
+        plot_start = dt - timedelta(days=0)
         plot_end = dt + timedelta(days=1)
     return mobile, plot_width, plot_height, tools, plot_start, plot_end
 def get_data_diff(data, df1, df2):
@@ -602,6 +602,23 @@ def map():
     # mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
     map_options = GMapOptions(lat=52.218, lng=21.00, map_type="roadmap", zoom=11)
 
+    locations = ['Ursynow','Marszalkowska','Niepodleglosci']
+    ranges = [0, 12, 36, 60, 84, 120, 1000]
+    colors = ['','green','lightgreen','yellow','orange','orangered','red']
+    df = pollution_data()
+    col = []
+    for location in locations:
+        for i in range(1,6):
+            val = df['value'][location]['PM25'][-i]
+            if val > 0:
+                break
+        for range_, color in zip(ranges, colors):
+            if val < range_:
+                col.append(color)
+                break
+    print col
+            
+
     plot = GMapPlot(
         x_range=DataRange1d(), y_range=DataRange1d(), map_options=map_options
     )
@@ -610,12 +627,14 @@ def map():
 
     source = ColumnDataSource(
         data=dict(
+            loc=locations,
+            col=col,
             lat=[52.1608, 52.2251, 52.2809],
             lon=[21.0338, 21.0148, 20.9621],
         )
     )
-
-    circle = Circle(x="lon", y="lat", size=15, fill_color="blue", fill_alpha=0.8, line_color=None)
+    
+    circle = Circle(x="lon", y="lat", size=15, fill_color="col", fill_alpha=0.8, line_color='black', line_alpha=0.5)
     plot.add_glyph(source, circle)
 
     plot.add_tools(PanTool(), WheelZoomTool(), BoxSelectTool())
