@@ -13,6 +13,10 @@ import plot
 import sun_info
 import os
 from dotenv import load_dotenv
+from bokeh.io import output_file, show
+from bokeh.models import (
+  GMapPlot, GMapOptions, ColumnDataSource, Circle, DataRange1d, PanTool, WheelZoomTool, BoxSelectTool
+)
 
 app = Flask(__name__)
 Mobility(app)
@@ -72,7 +76,7 @@ def plot_properties():
         plot_width = 300
         plot_height = 200
         tools = ['pan','box_zoom','reset']
-        plot_start = dt - timedelta(days=2)
+        plot_start = dt - timedelta(days=1)
         plot_end = dt + timedelta(days=1)
     return mobile, plot_width, plot_height, tools, plot_start, plot_end
 def get_data_diff(data, df1, df2):
@@ -189,8 +193,7 @@ def air_pollution():
         plot_start = plot_start,
         plot_end = plot_end,
         ranges = [0, 12, 36, 60, 84, 120, 1000]
-    )
-    
+        )
     # PM10 plot
     script_pm10, div_pm10 = plot.plot_pollution(
         df = df,
@@ -205,8 +208,7 @@ def air_pollution():
         plot_start = plot_start,
         plot_end = plot_end,
         ranges = [0, 20, 60, 100, 140, 200, 1000]
-    )
-    
+        )
     #PM25 other
     script_pm25_oth, div_pm25_oth = plot.plot_pollution(
         df = df,
@@ -221,8 +223,7 @@ def air_pollution():
         plot_start = plot_start,
         plot_end = plot_end,
         ranges = [0, 12, 36, 60, 84, 120, 1000]
-    )
-    
+        )
     # PM10 other
     script_pm10_oth, div_pm10_oth = plot.plot_pollution(
         df = df,
@@ -237,8 +238,7 @@ def air_pollution():
         plot_start = plot_start,
         plot_end = plot_end,
         ranges = [0, 20, 60, 100, 140, 200, 1000]
-    )
-    
+        )
     return render_template('bokeh_index.html', script_1=script_pm25, div_1=div_pm25, script_2=script_pm10, div_2=div_pm10, script_3=script_pm25_oth, div_3=div_pm25_oth, script_4=script_pm10_oth, div_4=div_pm10_oth)
     
 @app.route('/day_to_day')
@@ -596,6 +596,34 @@ def monthly():
 @app.route('/contact')
 def contact():
     return render_template('bokeh_index.html', content='kdoju83@gmail.com')
-            
+
+@app.route('/map')
+def map():
+    # mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
+    map_options = GMapOptions(lat=52.218, lng=21.00, map_type="roadmap", zoom=11)
+
+    plot = GMapPlot(
+        x_range=DataRange1d(), y_range=DataRange1d(), map_options=map_options
+    )
+    plot.title.text = "Warsaw"
+    plot.api_key = "AIzaSyC_6hfjfDEwgT1tU5NnPJI-g6LzhwjsDHY"
+
+    source = ColumnDataSource(
+        data=dict(
+            lat=[52.1608, 52.2251, 52.2809],
+            lon=[21.0338, 21.0148, 20.9621],
+        )
+    )
+
+    circle = Circle(x="lon", y="lat", size=15, fill_color="blue", fill_alpha=0.8, line_color=None)
+    plot.add_glyph(source, circle)
+
+    plot.add_tools(PanTool(), WheelZoomTool(), BoxSelectTool())
+
+    plot_script, plot_div = components(plot)
+
+    return render_template('bokeh_index.html', script_1=plot_script, div_1=plot_div, script_2='', div_2='', script_3='', div_3='', script_4='', div_4='')
+
+
 if __name__ == '__main__':
     app.run()

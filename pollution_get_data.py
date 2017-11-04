@@ -7,6 +7,7 @@ import pandas as pd
 import MySQLdb
 from dotenv import load_dotenv
 import os
+import time
 
 APP_ROOT = os.path.join(os.path.dirname(__file__))
 dotenv_path = os.path.join(APP_ROOT, '.env')
@@ -18,7 +19,12 @@ PASS = os.getenv('PASS')
 DB = os.getenv('DB')
 
 count = 0
-records = 5
+
+now = time.localtime()
+if now.tm_hour != 0 and now.tm_min != 0:
+    records = 5
+else:
+    records = -1
 
 sensor_ids = [3731, 3730, 16287, 3694, 3585, 3584, 3528, 3526, 16044, 17225, 17240, 17239]
 locations = ['Ursynow', 'Ursynow','Marszalkowska','Marszalkowska','Niepodleglosci','Niepodleglosci','Siedlce','Siedlce', 'Otwock', 'Otwock','Konstancin','Konstancin']
