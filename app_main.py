@@ -616,7 +616,6 @@ def map():
             if val < range_:
                 col.append(color)
                 break
-    print col
             
 
     plot = GMapPlot(
