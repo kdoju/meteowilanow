@@ -600,9 +600,9 @@ def contact():
 @app.route('/map')
 def map():
     # mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
-    map_options = GMapOptions(lat=52.218, lng=21.00, map_type="roadmap", zoom=11)
+    map_options = GMapOptions(lat=52.218, lng=21.00, map_type="roadmap", zoom=10)
 
-    locations = ['Ursynow','Marszalkowska','Niepodleglosci']
+    locations = ['Ursynow','Marszalkowska','Niepodleglosci','Konstancin','Otwock','Siedlce']
     ranges = [0, 12, 36, 60, 84, 120, 1000]
     colors = ['','green','lightgreen','yellow','orange','orangered','red']
     df = pollution_data()
@@ -613,7 +613,7 @@ def map():
             if val > 0:
                 break
         for range_, color in zip(ranges, colors):
-            if val < range_:
+            if val <= range_:
                 col.append(color)
                 break
             
@@ -621,22 +621,22 @@ def map():
     plot = GMapPlot(
         x_range=DataRange1d(), y_range=DataRange1d(), map_options=map_options
     )
-    plot.title.text = "Warsaw"
+    plot.title.text = "PM2.5"
     plot.api_key = "AIzaSyC_6hfjfDEwgT1tU5NnPJI-g6LzhwjsDHY"
 
     source = ColumnDataSource(
         data=dict(
             loc=locations,
             col=col,
-            lat=[52.1608, 52.2251, 52.2809],
-            lon=[21.0338, 21.0148, 20.9621],
+            lat=[52.1608, 52.2251, 52.219298, 52.082817, 52.115725, 52.172145],
+            lon=[21.0338, 21.0148, 21.004724, 21.111121, 21.237297, 22.282001],
         )
     )
     
     circle = Circle(x="lon", y="lat", size=15, fill_color="col", fill_alpha=0.8, line_color='black', line_alpha=0.5)
     plot.add_glyph(source, circle)
 
-    plot.add_tools(PanTool(), WheelZoomTool(), BoxSelectTool())
+    plot.add_tools(PanTool(), WheelZoomTool())
 
     plot_script, plot_div = components(plot)
 
