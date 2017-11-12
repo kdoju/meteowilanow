@@ -2,7 +2,7 @@ from bokeh.plotting import figure
 from bokeh.embed import components
 from bokeh.models import DatetimeTickFormatter, SingleIntervalTicker, LinearAxis
 from bokeh.models import Range1d, Label, BoxAnnotation, Grid
-#import sun_info
+from datetime import datetime, date, time, timedelta
 
 def plot_comp(
 #general
@@ -66,7 +66,7 @@ def plot_comp(
     return plot_script, plot_div
     
     
-def plot_pollution(df, mobile, title, plot_width, plot_height, tools, pollution_type, locations, colors, plot_start, plot_end, ranges):
+def plot_pollution(df, mobile, title, plot_width, plot_height, tools, pollution_type, locations, colors, plot_start, plot_end, ranges, y_hist):
     fig = figure(
                     title=title, \
                     plot_width=plot_width, \
@@ -75,16 +75,22 @@ def plot_pollution(df, mobile, title, plot_width, plot_height, tools, pollution_
                     tools=tools
                 )
 
+    max = ranges[3]
     for location, color in zip(locations, colors):
         fig.line(df.index, df[('value', location, pollution_type)], line_width=1.5, color=color, muted_line_alpha=0.2, legend=(location if not mobile else None))
-        fig.x_range = Range1d(plot_start, plot_end)
-        fig.toolbar.logo=None
-        fig.toolbar_location=("above")
-        fig.legend.location = "top_left"
-        fig.legend.click_policy="mute"
+        df1 = df[df.index >= datetime.combine(date.today(), time()) - timedelta(y_hist)]
+        temp_max = df1[('value', location, pollution_type)].max()
+        max = (temp_max if temp_max > max else max)
+
+
+    fig.y_range = Range1d(0, max)
+    fig.x_range = Range1d(plot_start, plot_end)
+    fig.toolbar.logo=None
+    fig.toolbar_location=("above")
+    fig.legend.location = "top_left"
+    fig.legend.click_policy="mute"
 
     # Add color scale
-    ranges = ranges
     colors = ['green','lightgreen','yellow','orange','orangered','red']
     for bottom, top, color in zip(ranges[1:], ranges[:-1], colors):
         box = BoxAnnotation(bottom=bottom, top=top, fill_alpha=0.3, fill_color=color)

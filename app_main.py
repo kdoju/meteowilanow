@@ -71,6 +71,7 @@ def plot_properties():
         tools = ['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset']
         plot_start = dt - timedelta(days=dt.weekday())
         plot_end = plot_start + timedelta(days=7)
+        y_hist = 7
     else:
         mobile = True
         plot_width = 300
@@ -78,7 +79,8 @@ def plot_properties():
         tools = ['pan','box_zoom','reset']
         plot_start = dt - timedelta(days=0)
         plot_end = dt + timedelta(days=1)
-    return mobile, plot_width, plot_height, tools, plot_start, plot_end
+        y_hist = 1
+    return mobile, plot_width, plot_height, tools, plot_start, plot_end, y_hist
 def get_data_diff(data, df1, df2):
     curr_data = df1[data][-1]
     prev_data = df2[data][df2.index == df1.index[-1]][-1]
@@ -118,7 +120,7 @@ def index():
     # df_hr_2 = df_hr[df_hr.index >= plot_start]
     df_hr_2 = df_hr[df_hr.index >= datetime.today() - timedelta(days=7)]
 
-    mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
+    mobile, plot_width, plot_height, tools, plot_start, plot_end, y_hist = plot_properties()
 
     #Temperature
     # temp = figure(title='Temperature [\xb0C]' + ' / Current: ' + str(round(df.Temperature[-1],1)), plot_width=plot_width, plot_height=plot_height, x_axis_type="datetime", tools=['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset'])
@@ -177,7 +179,7 @@ def index():
 @app.route('/air_pollution')
 def air_pollution():
     df = pollution_data()
-    mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
+    mobile, plot_width, plot_height, tools, plot_start, plot_end, y_hist = plot_properties()
 
     #PM25 plot
     script_pm25, div_pm25 = plot.plot_pollution(
@@ -192,7 +194,8 @@ def air_pollution():
         colors = ['red','blue','green'],
         plot_start = plot_start,
         plot_end = plot_end,
-        ranges = [0, 12, 36, 60, 84, 120, 1000]
+        ranges = [0, 12, 36, 60, 84, 120, 1000],
+        y_hist = y_hist
         )
     # PM10 plot
     script_pm10, div_pm10 = plot.plot_pollution(
@@ -207,7 +210,8 @@ def air_pollution():
         colors = ['red','blue','green'],
         plot_start = plot_start,
         plot_end = plot_end,
-        ranges = [0, 20, 60, 100, 140, 200, 1000]
+        ranges = [0, 20, 60, 100, 140, 200, 1000],
+        y_hist = y_hist
         )
     #PM25 other
     script_pm25_oth, div_pm25_oth = plot.plot_pollution(
@@ -222,7 +226,8 @@ def air_pollution():
         colors = ['red','blue','green'],
         plot_start = plot_start,
         plot_end = plot_end,
-        ranges = [0, 12, 36, 60, 84, 120, 1000]
+        ranges = [0, 12, 36, 60, 84, 120, 1000],
+        y_hist = y_hist
         )
     # PM10 other
     script_pm10_oth, div_pm10_oth = plot.plot_pollution(
@@ -237,14 +242,15 @@ def air_pollution():
         colors = ['red','blue','green'],
         plot_start = plot_start,
         plot_end = plot_end,
-        ranges = [0, 20, 60, 100, 140, 200, 1000]
+        ranges = [0, 20, 60, 100, 140, 200, 1000],
+        y_hist = y_hist
         )
     return render_template('bokeh_index.html', script_1=script_pm25, div_1=div_pm25, script_2=script_pm10, div_2=div_pm10, script_3=script_pm25_oth, div_3=div_pm25_oth, script_4=script_pm10_oth, div_4=div_pm10_oth)
     
 @app.route('/day_to_day')
 def day_to_day():
 
-    mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
+    mobile, plot_width, plot_height, tools, plot_start, plot_end, y_hist = plot_properties()
     
     #get sunrise and sunset time
     sunrise, sunset = sun_info.get_sun_info('day')
@@ -382,7 +388,7 @@ def day_to_day():
 @app.route('/week_to_week')
 def week_to_week():
     
-    mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
+    mobile, plot_width, plot_height, tools, plot_start, plot_end, y_hist = plot_properties()
 
     #get sunrise and sunset time
     sunrise, sunset = sun_info.get_sun_info('week')
@@ -522,7 +528,7 @@ def daily():
     
     df = data()
     df_day = df.groupby([datetime.strptime(datetime.strftime(x, "%Y-%m-%d"), "%Y-%m-%d") for x in df.index]).mean()
-    mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
+    mobile, plot_width, plot_height, tools, plot_start, plot_end, y_hist = plot_properties()
 
     #Temperature
     # temp = figure(title="Temperature [\xb0C]", plot_width=plot_width, plot_height=250, x_axis_type="datetime")
@@ -560,7 +566,7 @@ def monthly():
     
     df = data()
     df_day = df.groupby([datetime.strptime(datetime.strftime(x, "%Y-%m"), "%Y-%m") for x in df.index]).mean()
-    mobile, plot_width, plot_height, tools, plot_start, plot_end = plot_properties()
+    mobile, plot_width, plot_height, tools, plot_start, plot_end, y_hist = plot_properties()
 
     #Temperature
     # temp = figure(title="Temperature [\xb0C]", plot_width=plot_width, plot_height=250, x_axis_type="datetime")
