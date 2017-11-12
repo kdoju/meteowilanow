@@ -66,8 +66,8 @@ def plot_properties():
     dt = datetime.strptime(datetime.strftime(datetime.today(), "%Y-%m-%d 00:00"), "%Y-%m-%d %H:%M")
     if not request.MOBILE:
         mobile = False
-        plot_width = 800
-        plot_height = 350
+        plot_width = 650
+        plot_height = 270
         tools = ['pan','xwheel_zoom','box_zoom','ywheel_zoom','reset']
         plot_start = dt - timedelta(days=dt.weekday())
         plot_end = plot_start + timedelta(days=7)
@@ -174,7 +174,11 @@ def index():
     # hum_script, hum_div = components(hum, wrap_plot_info = False)
 
 
-    return render_template('bokeh_index.html', script_1=temp_script, div_1=temp_div, script_2=pres_script, div_2=pres_div, script_3=hum_script, div_3=hum_div, script_4=wind_script, div_4=wind_div)
+    return render_template('bokeh_index.html', \
+                script_1=temp_script, div_1=temp_div, \
+                script_2=wind_script, div_2=wind_div, \
+                script_3=pres_script, div_3=pres_div, \
+                script_4=hum_script, div_4=hum_div)
     
 @app.route('/air_pollution')
 def air_pollution():
